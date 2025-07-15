@@ -55,7 +55,7 @@ const Education = () => {
   return (
     <div className="bg-[#F9FAFB] min-h-screen p-6 md:p-10 text-[#1f4882]">
       <div className="max-w-5xl mx-auto bg-white p-6 rounded-md shadow">
-        <h2 className="text-2xl font-bold mb-2">Education</h2>
+        <h2 className="text-2xl font-bold mb-2 mt-8">Education</h2>
         <p className="mb-6 text-[#6B7280]">Add your academic qualifications to strengthen your resume</p>
 
         {/* Existing Education */}
@@ -115,7 +115,7 @@ const Education = () => {
           <div>
             <label className="text-sm font-medium text-[#1F2937]">GPA (Optional)</label>
             <input
-              type="text"
+              type="number"
               name="gpa"
               value={newEdu.gpa}
               onChange={handleChange}
