@@ -32,6 +32,8 @@ const App = () => {
           <Route path="AddCertificatePage" element={<AddCertificatePage />} />
           <Route path="experience" element={<WorkExperience />} />
           <Route path="languages" element={<Language />} />
+          <Route path="education" element={<Education />} />
+          <Route path="personal" element={<PersonalInformation />} />
         </Route>
       </Routes>
     </>
