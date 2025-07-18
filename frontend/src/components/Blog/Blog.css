@@ -1,0 +1,132 @@
+.blog-section {
+  padding: 80px 20px;
+  text-align: center;
+  background-color: white;
+}
+
+.blog-section h2 {
+  font-size: 36px;
+  font-weight: bold;
+  color: #1F2937;
+  margin-bottom: 20px;
+}
+
+.blog-section > p {
+  font-size: 18px;
+  color: #6B7280;
+  margin-bottom: 60px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.blog-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto 60px;
+}
+
+.blog-feature-card {
+  padding: 30px;
+  background-color: #F9FAFB;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid #E5E7EB;
+}
+
+.blog-feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
+  border-color: #6366F1;
+}
+
+.blog-feature-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #6366F1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.blog-feature-card:hover .blog-feature-icon {
+  background-color: #4F46E5;
+  transform: scale(1.1);
+}
+
+.blog-feature-card h3 {
+  font-size: 20px;
+  color: #1F2937;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.blog-feature-card p {
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.6;
+}
+
+.blog-cta {
+  margin-top: 40px;
+}
+
+.blog-visit-btn {
+  background: #6366F1;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.blog-visit-btn:hover {
+  background: #4F46E5;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.blog-visit-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .blog-section {
+    padding: 60px 20px;
+  }
+  
+  .blog-section h2 {
+    font-size: 28px;
+  }
+  
+  .blog-section > p {
+    font-size: 16px;
+  }
+  
+  .blog-features {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+  
+  .blog-feature-card {
+    padding: 25px;
+  }
+  
+  .blog-visit-btn {
+    padding: 14px 28px;
+    font-size: 14px;
+  }
+}

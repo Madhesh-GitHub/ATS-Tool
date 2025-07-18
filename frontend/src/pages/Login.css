@@ -1,0 +1,126 @@
+.login-root {
+    display: flex;
+    min-height: 100vh;
+    background: #F9FAFB;
+  }
+  
+  .login-left, .login-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .login-left {
+    background: #F9FAFB;
+    padding: 40px;
+  }
+  
+  .login-illustration {
+    margin-top: 40px;
+    width: 320px;
+    max-width: 90%;
+  }
+  
+  .login-right {
+    background: #fff;
+    padding: 40px 60px;
+    box-shadow: 0 0 24px rgba(0,0,0,0.04);
+    border-radius: 0 12px 12px 0;
+    min-width: 400px;
+  }
+  
+  .login-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .login-title {
+    font-size: 1.2rem;
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+  
+  .login-form label {
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+  }
+  
+  .login-form input {
+    padding: 10px;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #F9FAFB;
+    color: #1F2937;
+  }
+  
+  .login-forgot {
+    text-align: right;
+    margin-bottom: 8px;
+  }
+  
+  .login-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .login-btn:hover {
+    background: #4F46E5;
+  }
+  
+  .login-divider {
+    display: flex;
+    align-items: center;
+    margin: 18px 0;
+    color: #6B7280;
+  }
+  
+  .login-divider span {
+    flex: 1;
+    text-align: center;
+    border-bottom: 1px solid #E5E7EB;
+    line-height: 0.1em;
+    margin: 0 10px;
+  }
+  
+  .login-google {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid #0EA5E9;
+    border-radius: 6px;
+    background: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background 0.2s, color 0.2s;
+  }
+  
+  .login-google:hover {
+    background: #E0F2FE;
+    color: #0369A1;
+  }
+  
+  .login-signup {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+    font-size: 0.95rem;
+  }
