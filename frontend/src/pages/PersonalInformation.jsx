@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSession } from "../context/SessionContext"; // ← New import
+import { ResumeBuilderService } from '../services/resumeBuilderService';
 
 export default function PersonalInformation() {
   const navigate = useNavigate();
-  const { saveData, startNewSession } = useSession(); // ← Use session context
+  const resumeService = new ResumeBuilderService();
   
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", email: "", phone: "",
@@ -13,34 +13,77 @@ export default function PersonalInformation() {
     zip: "", country: "", remote: false, relocate: false,
   });
   const [errors, setErrors] = useState({});
+  const [sessionId, setSessionId] = useState(null);
+
+  // Load existing data on component mount
+  useEffect(() => {
+    loadExistingData();
+  }, []);
+
+  const loadExistingData = async () => {
+    try {
+      const userData = await resumeService.getUserData();
+      
+      if (userData.hasData) {
+        console.log('📊 Loading existing user data...');
+        setSessionId(userData.sessionId);
+        
+        // Parse existing data and populate form
+        const data = userData.data;
+        const personalMatch = data.match(/=== PERSONAL DATA ===\n([\s\S]*?)(?=\n=== |$)/);
+        
+        if (personalMatch) {
+          const personalData = personalMatch[1];
+          const lines = personalData.split('\n').filter(line => line.trim());
+          
+          const parsedData = {};
+          lines.forEach(line => {
+            const [key, ...valueParts] = line.split(': ');
+            const value = valueParts.join(': ').trim();
+            
+            if (key && value) {
+              if (value === 'true') parsedData[key] = true;
+              else if (value === 'false') parsedData[key] = false;
+              else parsedData[key] = value;
+            }
+          });
+          
+          setFormData(prev => ({ ...prev, ...parsedData }));
+          console.log('✅ Personal data loaded:', parsedData);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error loading existing data:', error);
+    }
+  };
 
   const validateForm = () => {
-  const newErrors = {};
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^\+?\d{7,15}$/;
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+?\d{7,15}$/;
 
-  if (!formData.firstName.trim()) newErrors.firstName = "First name is required.";
-  if (!formData.lastName.trim()) newErrors.lastName = "Last name is required.";
-  if (!formData.email.trim()) {
-    newErrors.email = "Email is required.";
-  } else if (!emailRegex.test(formData.email)) {
-    newErrors.email = "Invalid email format.";
-  }
+    if (!formData.firstName.trim()) newErrors.firstName = "First name is required.";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required.";
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required.";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Invalid email format.";
+    }
 
-  if (!formData.phone.trim()) {
-    newErrors.phone = "Phone number is required.";
-  } else if (!phoneRegex.test(formData.phone)) {
-    newErrors.phone = "Invalid phone format.";
-  }
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required.";
+    } else if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = "Invalid phone format.";
+    }
 
-  if (!formData.city.trim()) newErrors.city = "City is required.";
-  if (!formData.state.trim()) newErrors.state = "State/Province is required.";
-  if (!formData.zip.trim()) newErrors.zip = "ZIP code is required.";
-  if (!formData.country.trim()) newErrors.country = "Country is required.";
+    if (!formData.city.trim()) newErrors.city = "City is required.";
+    if (!formData.state.trim()) newErrors.state = "State/Province is required.";
+    if (!formData.zip.trim()) newErrors.zip = "ZIP code is required.";
+    if (!formData.country.trim()) newErrors.country = "Country is required.";
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -50,56 +93,60 @@ export default function PersonalInformation() {
     }));
   };
 
-  const handleSave = async () => {
+  const handleSaveProgress = async (e) => {
+    e.preventDefault();
+    
     if (!validateForm()) {
       alert("Please fill all required fields correctly.");
       return;
     }
 
     try {
-      await saveData("personal", formData); // ← Use session context
+      const result = await resumeService.saveResumeData('personal', formData);
+      setSessionId(result.sessionId);
       alert("Personal information saved successfully!");
     } catch (error) {
       console.error("Save failed:", error);
       alert("Failed to save. Please try again.");
     }
   };
-  const handleNext = async () => {
-  if (!validateForm()) {
-    alert("Please fill all required fields correctly.");
-    return;
-  }
 
-  try {
-    await saveData("personal", formData); // ← Use session context
-    alert("Personal information saved successfully!");
-    navigate("/builder/experience", { state: formData });
-  } catch (error) {
-    console.error("Save failed:", error);
-    alert("Failed to save. Please try again.");
-  }
-};
+  const handleNext = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      alert("Please fill all required fields correctly.");
+      return;
+    }
+
+    try {
+      const result = await resumeService.saveResumeData('personal', formData);
+      setSessionId(result.sessionId);
+      alert("Personal information saved successfully!");
+      navigate("/builder/experience");
+    } catch (error) {
+      console.error("Save failed:", error);
+      alert("Failed to save. Please try again.");
+    }
+  };
+
   const handleStartFresh = async () => {
-    if (confirm("This will clear all previous data. Are you sure?")) {
-      await startNewSession();
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        linkedIn: "",
-        portfolio: "",
-        headline: "",
-        street: "",
-        apartment: "",
-        city: "",
-        state: "",
-        zip: "",
-        country: "",
-        remote: false,
-        relocate: false,
-      });
-      alert("Started fresh! Previous data cleared.");
+    if (confirm("This will clear all current form data. Are you sure?")) {
+      try {
+        await resumeService.startFreshSession();
+        setFormData({
+          firstName: "", lastName: "", email: "", phone: "",
+          linkedIn: "", portfolio: "", headline: "",
+          street: "", apartment: "", city: "", state: "",
+          zip: "", country: "", remote: false, relocate: false,
+        });
+        setErrors({});
+        setSessionId(null);
+        alert("Form cleared! You can start fresh.");
+      } catch (error) {
+        console.error("Start fresh failed:", error);
+        alert("Failed to clear data. Please try again.");
+      }
     }
   };
 
@@ -348,14 +395,13 @@ export default function PersonalInformation() {
                   3/4 Required Fields
                 </p>
 
-               <button className="ml-4 bg-[#5a4b81] text-white text-sm px-4 py-2 rounded-lg whitespace-nowrap hover:opacity-90" onClick={(e) => {
-                 e.preventDefault();
-                 handleNext();
-             }}
-             >
-             Next: Work Experience
-            </button>
-
+                {/* ✅ Fix: Pass event to handleNext */}
+                <button 
+                  className="ml-4 bg-[#5a4b81] text-white text-sm px-4 py-2 rounded-lg whitespace-nowrap hover:opacity-90" 
+                  onClick={handleNext}
+                >
+                  Next: Work Experience
+                </button>
               </div>
             </div>
 
@@ -364,14 +410,14 @@ export default function PersonalInformation() {
                 Back to Dashboard
               </button>
 
-              <button className="bg-[#5a4b81] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90" onClick={(e) => {
-              e.preventDefault();
-              handleNext();
-              }}
-           >
-            Save Progress
-          </button>
-          </div>
+              {/* ✅ Fix: Pass event to handleSaveProgress */}
+              <button 
+                className="bg-[#5a4b81] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90" 
+                onClick={handleSaveProgress}
+              >
+                Save Progress
+              </button>
+            </div>
           </div>
         </form>
       </div>

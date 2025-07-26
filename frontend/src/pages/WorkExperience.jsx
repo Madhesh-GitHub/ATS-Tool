@@ -1,6 +1,8 @@
 import React, { use, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import { ResumeBuilderService } from '../services/resumeBuilderService';
+
 const WorkExperience = () => {
   const [formData, setFormData] = useState({
     jobTitle: "",
@@ -11,6 +13,8 @@ const WorkExperience = () => {
     responsibilities: "",
   });
   const navigate = useNavigate();
+  const resumeService = new ResumeBuilderService();
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -20,32 +24,22 @@ const WorkExperience = () => {
   };
 
   const handleSave = async () => {
-  const { jobTitle, companyName, startDate, responsibilities } = formData;
+    const { jobTitle, companyName, startDate, responsibilities } = formData;
 
-  console.log("formData:", formData); 
+    if (!jobTitle?.trim() || !companyName?.trim() || !startDate?.trim() || !responsibilities?.trim()) {
+      alert("Please fill in all required fields (*) before saving.");
+      return;
+    }
 
-  if (
-    !jobTitle?.trim() ||
-    !companyName?.trim() ||
-    !startDate?.trim() ||
-    !responsibilities?.trim()
-  ) {
-    alert("Please fill in all required fields (*) before saving.");
-    return;
-  }
-
-  try {
-    const response = await axios.post("http://localhost:5000/save", {
-      step: "work_experience",
-      data: formData,
-    });
-    alert("Work experience saved successfully!");
-    navigate("/builder/education");
-  } catch (error) {
-    console.error("Save failed:", error);
-    alert("Failed to save. Please check your server.");
-  }
-};
+    try {
+      await resumeService.saveResumeData('work_experience', formData);
+      alert("Work experience saved successfully!");
+      navigate("/builder/education");
+    } catch (error) {
+      console.error("Save failed:", error);
+      alert("Failed to save. Please check your server.");
+    }
+  };
 
   const handleDelete = () => {
     setFormData({

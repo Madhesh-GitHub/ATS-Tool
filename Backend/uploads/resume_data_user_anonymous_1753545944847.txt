@@ -1,0 +1,11 @@
+=== WORK_EXPERIENCE DATA ===
+jobTitle: ssssssssssssssssa
+companyName: qqqqqqqqqqqq
+startDate: 2025-07-16
+endDate: 2025-07-26
+isCurrent: false
+responsibilities: wwq
+=== SKILLS DATA ===
+technicalSkills: {"name":"JavaScript","proficiency":"Beginner"}, {"name":"React.js","proficiency":"Beginner"}
+softSkills: Team Leadership
+industrySkills: Agile Development

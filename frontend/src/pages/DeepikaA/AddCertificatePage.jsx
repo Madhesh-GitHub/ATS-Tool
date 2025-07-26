@@ -1,243 +1,307 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ResumeBuilderService } from '../../services/resumeBuilderService';
 
-const AddCertificatePage = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+export default function AddCertificatePage() {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    title: '',
-    issuer: '',
-    issueDate: '',
-    expiryDate: '',
-    credentialId: '',
-    credentialUrl: '',
-    description: '',
+  const location = useLocation();
+  const resumeService = new ResumeBuilderService();
+  
+  const [certificate, setCertificate] = useState({
+    title: "",
+    issuer: "",
+    issueDate: "",
+    expiryDate: "",
+    credentialId: "",
+    credentialUrl: "",
+    description: "",
+    doesNotExpire: false
   });
+  
+  const [errors, setErrors] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-  const validateForm = () => {
-  const { title, issuer, issueDate } = formData;
-
-  if (!title.trim()) {
-    alert("Certificate name is required.");
-    return false;
-  }
-  if (!issuer.trim()) {
-    alert("Issuing organization is required.");
-    return false;
-  }
-
-  // Validate issueDate (MM/YYYY)
-  const datePattern = /^(0[1-9]|1[0-2])\/\d{4}$/;
-  if (!datePattern.test(issueDate.trim())) {
-    alert("Issue date must be in MM/YYYY format.");
-    return false;
-  }
-  // If expiryDate provided, validate it
-  if (
-    formData.expiryDate.trim() !== "" &&
-    !datePattern.test(formData.expiryDate.trim()) &&
-    formData.expiryDate.toLowerCase().trim() !== "no expiration"
-  ) {
-    alert(" Expiration date must be MM/YYYY or 'No Expiration'.");
-    return false;
-  }
-
-  return true;
-};
-
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  if (!validateForm()) return;
-
-  try {
-    const res = await fetch('http://localhost:5000/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        step: 'certificate',
-        data: formData,
-      }),
-    });
-
-    const text = await res.text();
-    console.log("Response:", text);
-
-    if (res.ok) {
-      alert("Certificate saved successfully!");
-      // Navigate to resume preview instead of certificate page
-      navigate('/builder/resume-preview'); // ← Fixed navigation path
-    } else {
-      alert("Failed to save");
+  // Check if we're editing an existing certificate
+  useEffect(() => {
+    if (location.state?.editingCertificate) {
+      setCertificate(location.state.editingCertificate);
+      setIsEditing(true);
+      setEditingIndex(location.state.editingIndex);
     }
-  } catch (err) {
-    console.error("Error:", err);
-    alert("Error saving certificate");
-  }
-};
+  }, [location.state]);
 
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setCertificate(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
 
-return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md px-6 py-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-indigo-600">ATS Resume Checker</h1>
-          <ul className="hidden md:flex gap-6 text-gray-700 font-medium">
-            <li className="hover:text-indigo-600 cursor-pointer" onClick={() => navigate('/')}>Home</li>
-            <li className="hover:text-indigo-600 cursor-pointer">Login</li>
-            <li className="hover:text-indigo-600 cursor-pointer">Sign Up</li>
-          </ul>
-          <button className="md:hidden text-3xl text-indigo-600" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? '✕' : '☰'}
-          </button>
-        </div>
+    // Clear expiry date if "does not expire" is checked
+    if (name === 'doesNotExpire' && checked) {
+      setCertificate(prev => ({
+        ...prev,
+        expiryDate: ''
+      }));
+    }
 
-        {menuOpen && (
-          <ul className="md:hidden mt-4 flex flex-col gap-3 text-gray-700 font-medium">
-            <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setMenuOpen(false)}>Home</li>
-            <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setMenuOpen(false)}>Login</li>
-            <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setMenuOpen(false)}>Sign Up</li>
-          </ul>
-        )}
-      </nav>
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
 
-      {/* Certificate Form */}
-      <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-lg mt-10 mb-10">
-        <h1 className="text-xl font-bold text-indigo-600 mb-6">Add New Certificate</h1>
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!certificate.title.trim()) {
+      newErrors.title = "Certificate title is required";
+    }
+    
+    if (!certificate.issuer.trim()) {
+      newErrors.issuer = "Issuing organization is required";
+    }
+    
+    if (!certificate.issueDate) {
+      newErrors.issueDate = "Issue date is required";
+    }
+    
+    // Validate URL format if provided
+    if (certificate.credentialUrl && !isValidUrl(certificate.credentialUrl)) {
+      newErrors.credentialUrl = "Please enter a valid URL";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-800">Certificate Name*</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="e.g., Project Management Professional (PMP)"
-                className="w-full mt-1 p-2 border rounded text-sm"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Use the full, official name of the certification
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-800">Issuing Organization*</label>
-              <input
-                type="text"
-                name="issuer"
-                value={formData.issuer}
-                onChange={handleChange}
-                placeholder="e.g., Project Management Institute"
-                className="w-full mt-1 p-2 border rounded text-sm"
-              />
-            </div>
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleSave = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      // Get existing certificates
+      let existingCertificates = [];
+      
+      try {
+        const userData = await resumeService.getUserData();
+        if (userData.hasData) {
+          const data = userData.data;
+          const certMatch = data.match(/=== CERTIFICATIONS DATA ===\n([\s\S]*?)(?=\n=== |$)/);
+          
+          if (certMatch) {
+            const certData = certMatch[1];
+            const parsedCerts = JSON.parse(certData.split('certificates: ')[1] || '[]');
+            existingCertificates = parsedCerts;
+          }
+        }
+      } catch (parseError) {
+        console.log('No existing certificates found, starting fresh');
+      }
+
+      // Add or update certificate
+      if (isEditing && editingIndex !== null) {
+        existingCertificates[editingIndex] = certificate;
+      } else {
+        existingCertificates.push(certificate);
+      }
+
+      // Save updated certificates
+      await resumeService.saveResumeData('certifications', { 
+        certificates: existingCertificates 
+      });
+
+      alert(`Certificate ${isEditing ? 'updated' : 'added'} successfully!`);
+      navigate('/builder/CertificatePage');
+      
+    } catch (error) {
+      console.error("Error saving certificate:", error);
+      alert("Error saving certificate");
+    }
+  };
+
+  const handleCancel = () => {
+    navigate('/builder/CertificatePage');
+  };
+
+  return (
+    <div className="p-20 w-full mx-auto space-y-8">
+      <h1 className="text-3xl font-bold text-[#1f4882] mb-6">
+        {isEditing ? 'Edit Certificate' : 'Add Certificate'}
+      </h1>
+      
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <form className="space-y-6">
+          {/* Certificate Title */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Certificate Title *
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={certificate.title}
+              onChange={handleInputChange}
+              placeholder="e.g., AWS Certified Solutions Architect"
+              className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                errors.title ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          {/* Issuing Organization */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Issuing Organization *
+            </label>
+            <input
+              type="text"
+              name="issuer"
+              value={certificate.issuer}
+              onChange={handleInputChange}
+              placeholder="e.g., Amazon Web Services, Microsoft, Google"
+              className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                errors.issuer ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {errors.issuer && <p className="text-red-500 text-sm mt-1">{errors.issuer}</p>}
+          </div>
+
+          {/* Dates */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-800">Issue Date*</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Issue Date *
+              </label>
               <input
-                type="text"
+                type="date"
                 name="issueDate"
-                value={formData.issueDate}
-                onChange={handleChange}
-                placeholder="MM/YYYY"
-                className="w-full mt-1 p-2 border rounded text-sm"
+                value={certificate.issueDate}
+                onChange={handleInputChange}
+                className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                  errors.issueDate ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
+              {errors.issueDate && <p className="text-red-500 text-sm mt-1">{errors.issueDate}</p>}
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-800">Expiration Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Expiry Date
+              </label>
+              <input
+                type="date"
+                name="expiryDate"
+                value={certificate.expiryDate}
+                onChange={handleInputChange}
+                disabled={certificate.doesNotExpire}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              />
+              <div className="mt-2">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="doesNotExpire"
+                    checked={certificate.doesNotExpire}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <span className="text-sm text-gray-600">This certificate does not expire</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Credential Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Credential ID
+              </label>
               <input
                 type="text"
-                name="expiryDate"
-                value={formData.expiryDate}
-                onChange={handleChange}
-                placeholder="MM/YYYY or No Expiration"
-                className="w-full mt-1 p-2 border rounded text-sm"
+                name="credentialId"
+                value={certificate.credentialId}
+                onChange={handleInputChange}
+                placeholder="e.g., ABC123XYZ"
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Credential URL
+              </label>
+              <input
+                type="url"
+                name="credentialUrl"
+                value={certificate.credentialUrl}
+                onChange={handleInputChange}
+                placeholder="https://..."
+                className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                  errors.credentialUrl ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.credentialUrl && <p className="text-red-500 text-sm mt-1">{errors.credentialUrl}</p>}
             </div>
           </div>
 
+          {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-800">Credential ID</label>
-            <input
-              type="text"
-              name="credentialId"
-              value={formData.credentialId}
-              onChange={handleChange}
-              placeholder="e.g., ABC123XYZ (optional)"
-              className="w-full mt-1 p-2 border rounded text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-800">Credential URL</label>
-            <input
-              type="text"
-              name="credentialUrl"
-              value={formData.credentialUrl}
-              onChange={handleChange}
-              placeholder="https://... (optional)"
-              className="w-full mt-1 p-2 border rounded text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-800">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
             <textarea
               name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Briefly describe what this certification represents..."
-              className="w-full mt-1 p-2 border rounded text-sm"
-              rows={4}
-            ></textarea>
-          </div>
-
-          {/* Optimization Tips */}
-          <div className="bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
-            <p className="font-semibold text-indigo-600 mb-2">📘 ATS Optimization Tips</p>
-            <ul className="list-disc pl-5 space-y-1 text-gray-500">
-              <li>Include the full name of certifications without abbreviations</li>
-              <li>List certifications relevant to the job you're applying for</li>
-              <li>Include credential IDs when available</li>
-              <li>Use industry-standard names that ATS systems will recognize</li>
-            </ul>
-          </div>
-
-          {/* Action Buttons */}
-            <div className="flex justify-between items-center mt-6">
-            <button
-              type="button" onClick={() => navigate('/CertificatePage')}
-              className="px-5 py-2 bg-gray-200 border text-gray-800 rounded hover:opacity-80 transition"
-            >
-              Cancel
-            </button>
-            <div className="flex gap-4">
-              <button type="submit" className="px-5 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
-                Next: Preview Resume
-              </button>
-              <button type="submit" className="px-5 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
-                Add Certificate
-              </button>
-            </div>
+              value={certificate.description}
+              onChange={handleInputChange}
+              placeholder="Brief description of what this certification covers..."
+              rows="3"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            />
           </div>
         </form>
       </div>
 
-      {/* Footer */}
-      <div className="text-center text-sm text-gray-500 mt-10 mb-6">
-        © 2025 ATS Resume Checker. All rights reserved.
+      {/* Action Buttons */}
+      <div className="flex justify-between pt-6">
+        <button 
+          onClick={handleCancel}
+          className="text-gray-600 underline hover:text-gray-800"
+        >
+          ← Cancel
+        </button>
+        
+        <div className="space-x-4">
+          <button
+            onClick={handleCancel}
+            className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="bg-[#1f4882] text-white px-6 py-2 rounded-md hover:bg-blue-700"
+          >
+            {isEditing ? 'Update Certificate' : 'Save Certificate'}
+          </button>
+        </div>
       </div>
     </div>
   );
-};
-
-export default AddCertificatePage;
+}

@@ -1,172 +1,190 @@
-import React, { useState } from 'react';
-import { MdDelete } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ResumeBuilderService } from '../services/resumeBuilderService';
 
-const Language = () => {
-    const navigate = useNavigate();
-    const [languages, setLanguages] = useState([
-        { language: 'English', proficiency: 'Native' },
-    ]);
+export default function Language() {
+  const navigate = useNavigate();
+  const resumeService = new ResumeBuilderService();
+  
+  const [languages, setLanguages] = useState([]);
+  const [newLanguage, setNewLanguage] = useState({
+    language: "",
+    proficiency: "Beginner"
+  });
 
-    const proficiencies = ['Native', 'Fluent', 'Advanced', 'Intermediate', 'Basic'];
+  const proficiencyLevels = ["Beginner", "Intermediate", "Advanced", "Native/Fluent"];
 
-    const addLanguage = () => {
-        setLanguages([...languages, { language: '', proficiency: 'Native' }]);
-    };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewLanguage(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-    const updateLanguage = (index, field, value) => {
-        const updated = [...languages];
-        updated[index][field] = value;
-        setLanguages(updated);
-    };
-
-    const deleteLanguage = (index) => {
-        if (languages.length > 1) {
-            const updated = [...languages];
-            updated.splice(index, 1);
-            setLanguages(updated);
-        }
-    };
-
-    const handleBack = () => {
-        navigate("/builder/achievements");
-    };
-    const saveToServer = async () => {
-    try {
-        const response = await fetch("http://localhost:5000/save", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                step: "Languages",
-                data: languages,
-            }),
-        });
-
-        const result = await response.text();
-        console.log(" Saved:", result);
-    } catch (error) {
-        console.error(" Save failed:", error);
+  const addLanguage = () => {
+    if (newLanguage.language.trim() === "") {
+      alert("Please enter a language name.");
+      return;
     }
-};
-   const handleNext = async () => {
-    await saveToServer();  //  Save data to backend
-    navigate("/builder/CertificatePage"); 
-};
 
-    return (
-        <div className=" min-h-screen p-6 mt-8">
-            <div className="max-w-5xl mx-auto space-y-8">
-                {/* Header */}
-                <div>
-                    <h1 className="text-3xl font-bold text-[#4338ca]">Languages</h1>
-                    <p className="text-gray-600 mt-1">
-                        Add your language proficiencies to showcase your communication skills to potential employers.
-                    </p>
-                </div>
-
-                {/* Language Form */}
-                <div className="bg-white p-6 rounded shadow">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="font-semibold text-lg">Language Proficiency</h2>
-                        <button
-                            onClick={addLanguage}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                        >
-                            Add Language
-                        </button>
-                    </div>
-
-                    {languages.map((entry, index) => (
-                        <div
-                            key={index}
-                            className="grid md:grid-cols-3 gap-4 mb-4 bg-gray-100 p-4 rounded border border-gray-200 items-center"
-                        >
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Language</label>
-                                <input
-                                    type="text"
-                                    value={entry.language}
-                                    onChange={(e) => updateLanguage(index, 'language', e.target.value)}
-                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                    placeholder="e.g., English"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Proficiency Level</label>
-                                <select
-                                    value={entry.proficiency}
-                                    onChange={(e) => updateLanguage(index, 'proficiency', e.target.value)}
-                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                >
-                                    {proficiencies.map((level) => (
-                                        <option key={level} value={level}>
-                                            {level}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Delete Button*/}
-                            {languages.length > 1 && (
-                                <div className="flex justify-end self-start mt-6 md:mt-0">
-                                    <button
-                                        onClick={() => deleteLanguage(index)}
-                                        className="text-red-500 hover:text-red-700"
-                                        title="Delete"
-                                    >
-                                        <MdDelete size={20} />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                {/* ATS Tips */}
-                <div className="bg-white p-6 rounded shadow">
-                    <h2 className="text-xl font-semibold text-gray-700 mb-4">ATS Optimization Tips</h2>
-                    <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-100 shadow-sm">
-                            <strong className="text-blue-600 block mb-1">Be Specific About Proficiency</strong>
-                            <p>Use levels like “Native”, “Fluent”, “Advanced”, “Intermediate”, or “Basic”. Avoid “Good” or “Fair”.</p>
-                        </div>
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-100 shadow-sm">
-                            <strong className="text-blue-600 block mb-1">Match Job Requirements</strong>
-                            <p>Mention languages from the job description first, especially for roles that require specific language skills.</p>
-                        </div>
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-100 shadow-sm">
-                            <strong className="text-blue-600 block mb-1">Include Certifications</strong>
-                            <p>If you have certifications (TOEFL, IELTS, etc.), include them in the Certificates section.</p>
-                        </div>
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-100 shadow-sm">
-                            <strong className="text-blue-600 block mb-1">Highlight Relevant Experience</strong>
-                            <p>Connect language skills to achievements — e.g., working with international teams.</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Buttons */}
-                <div className="flex justify-between mt-6">
-                    <button
-                        onClick={handleBack}
-                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-                    >
-                        Back
-                    </button>
-
-                    <button
-                        onClick={handleNext}
-                        className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                        Save & Continue
-                    </button>
-                </div>
-            </div>
-        </div>
+    // Check if language already exists
+    const exists = languages.some(lang => 
+      lang.language.toLowerCase() === newLanguage.language.toLowerCase()
     );
-};
 
-export default Language;
+    if (exists) {
+      alert("This language is already added.");
+      return;
+    }
+
+    setLanguages([...languages, { ...newLanguage }]);
+    setNewLanguage({ language: "", proficiency: "Beginner" });
+  };
+
+  const removeLanguage = (index) => {
+    setLanguages(languages.filter((_, i) => i !== index));
+  };
+
+  const editLanguage = (index) => {
+    setNewLanguage(languages[index]);
+    removeLanguage(index);
+  };
+
+  const handleSave = async () => {
+    if (languages.length === 0) {
+      alert("Please add at least one language before saving.");
+      return;
+    }
+
+    try {
+      await resumeService.saveResumeData('languages', { languages });
+      alert("Languages saved successfully!");
+    } catch (error) {
+      console.error("Error saving languages:", error);
+      alert("Error saving languages");
+    }
+  };
+
+  const handleContinue = async () => {
+    if (languages.length === 0) {
+      alert("Please add at least one language before continuing.");
+      return;
+    }
+
+    try {
+      await resumeService.saveResumeData('languages', { languages });
+      alert("Languages saved successfully!");
+      navigate("/builder/achievements");
+    } catch (error) {
+      console.error("Error saving languages:", error);
+      alert("Error saving languages");
+    }
+  };
+
+  return (
+    <div className="p-20 w-full mx-auto space-y-8">
+      <h1 className="text-3xl font-bold text-[#1f4882] mb-6">Languages</h1>
+      
+      {/* Add Language Form */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4 text-[#1f4882]">Add Language</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Language *
+            </label>
+            <input
+              type="text"
+              name="language"
+              value={newLanguage.language}
+              onChange={handleInputChange}
+              placeholder="e.g., English, Spanish, French"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Proficiency Level *
+            </label>
+            <select
+              name="proficiency"
+              value={newLanguage.proficiency}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            >
+              {proficiencyLevels.map(level => (
+                <option key={level} value={level}>{level}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
+        <button
+          onClick={addLanguage}
+          className="bg-[#1f4882] text-white px-4 py-2 rounded-md hover:bg-blue-700"
+        >
+          Add Language
+        </button>
+      </div>
+
+      {/* Languages List */}
+      {languages.length > 0 && (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4 text-[#1f4882]">Your Languages</h2>
+          <div className="space-y-3">
+            {languages.map((lang, index) => (
+              <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+                <div>
+                  <span className="font-medium">{lang.language}</span>
+                  <span className="text-gray-600 ml-2">({lang.proficiency})</span>
+                </div>
+                <div className="space-x-2">
+                  <button
+                    onClick={() => editLanguage(index)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => removeLanguage(index)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between pt-6">
+        <button 
+          onClick={() => navigate('/builder/skills')}
+          className="text-blue-600 underline hover:text-blue-800"
+        >
+          ← Back to Skills
+        </button>
+        
+        <div className="space-x-4">
+          <button
+            onClick={handleSave}
+            className="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700"
+          >
+            Save Progress
+          </button>
+          <button
+            onClick={handleContinue}
+            className="bg-[#1f4882] text-white px-6 py-2 rounded-md hover:bg-blue-700"
+          >
+            Continue to Achievements →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

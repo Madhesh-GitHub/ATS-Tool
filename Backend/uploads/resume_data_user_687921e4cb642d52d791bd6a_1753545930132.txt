@@ -1,0 +1,38 @@
+=== PERSONAL DATA ===
+firstName: Madhesh
+lastName: K
+email: thisismadhesh@gmail.com
+phone: 8778606263
+linkedIn: wqw
+portfolio: mmmmmmmmm
+headline: yyyyyyyyyyyyyyy
+street: Srisivasakthinagar 2nd street, murugampalayam, induvampalayam, Tiruppur.
+apartment: bbbbbbbbb
+city: Tiruppur
+state: Tamil Nadu
+zip: 641687
+country: India
+remote: true
+relocate: true
+=== WORK_EXPERIENCE DATA ===
+jobTitle: daad
+companyName: qqqqqqqqqqqq
+startDate: 2025-07-26
+endDate: 2025-07-26
+isCurrent: false
+responsibilities: rfghjk
+=== EDUCATION DATA ===
+degree: qsqsS
+institution: assssssssssssssssss
+location: usa
+gpa: 9
+startDate: 09/3344
+endDate: 09/9898
+coursework: 82y318y3
+honors: 12ui1i32
+=== ACHIEVEMENTS DATA ===
+achievements: {"title":"hu","description":"adndqkl","date":"2025-07-03","organization":"ij"}
+=== LANGUAGES DATA ===
+languages: {"language":"English","proficiency":"Intermediate"}
+=== CERTIFICATIONS DATA ===
+certificates: {"title":"helei","issuer":"aJBA","issueDate":"2025-07-26","expiryDate":"2025-07-25","credentialId":"3232","credentialUrl":"https://google.com","description":"ajdajdsv","doesNotExpire":false}

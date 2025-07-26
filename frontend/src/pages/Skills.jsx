@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import { ResumeBuilderService } from '../services/resumeBuilderService';
 
 const Skills =()=>{
 
@@ -16,6 +17,7 @@ const proficiencyLabels = ["Beginner", "Intermediate", "Advanced", "Expert"];
   const [inputSoftSkill, setInputSoftSkill] = useState("");
   const [inputIndustrySkill, setInputIndustrySkill] = useState("");
   const navigate=useNavigate();
+  const resumeService = new ResumeBuilderService();
 
   const addSkill = (skill, setSkillList, skillList) => {
     if (skill && !skillList.includes(skill)) {
@@ -62,6 +64,23 @@ const proficiencyLabels = ["Beginner", "Intermediate", "Advanced", "Expert"];
   } catch (error) {
     console.error("Error saving skills:", error);
     alert("Failed to save skills data.");
+  }
+};
+
+const handleSave = async () => {
+  try {
+    const skillsData = {
+      technicalSkills: technicalSkills.map(skill => JSON.stringify(skill)).join(', '),
+      softSkills: softSkills.join(', '),
+      industrySkills: industrySkills.join(', ')
+    };
+    
+    await resumeService.saveResumeData('skills', skillsData);
+    alert("Skills saved successfully!");
+    navigate("/builder/achievements");
+  } catch (error) {
+    console.error("Error saving skills:", error);
+    alert("Error saving skills");
   }
 };
 

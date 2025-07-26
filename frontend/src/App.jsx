@@ -37,7 +37,6 @@ import { Navigate } from "react-router-dom";
 const App = () => {
   return (
     <SessionProvider> {/* ← Wrap everything in SessionProvider */}
-    <ScrollToTop />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />

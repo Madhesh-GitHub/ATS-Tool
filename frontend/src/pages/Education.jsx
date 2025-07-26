@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import { ResumeBuilderService } from '../services/resumeBuilderService';
+
 const Education = () => {
   const [educationData, setEducationData] = useState([]);
   const [newEdu, setNewEdu] = useState({
@@ -13,83 +15,67 @@ const Education = () => {
     honors: "",
   });
   const navigate = useNavigate();
+  const resumeService = new ResumeBuilderService();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewEdu({ ...newEdu, [name]: value });
   };
-const validateForm = () => {
-  const { degree, institution, startDate, endDate, gpa } = newEdu;
 
-  if (!degree.trim() || !institution.trim() || !startDate.trim() || !endDate.trim()) {
-    alert("Please fill in all required fields (*) before saving.");
-    return false;
-  }
+  const validateForm = () => {
+    const { degree, institution, startDate, endDate, gpa } = newEdu;
 
-  const gpaRegex = /^(\d+(\.\d+)?)(\/(\d+(\.\d+)?))?$/;  
-  if (gpa && (isNaN(gpa) || gpa < 0 || gpa > 10)) {
-  setError("Please enter a valid GPA between 0.0 and 10.0.");
-  return false;
-  }
-  const dateRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
-  if (!dateRegex.test(startDate)) {
-    alert("Start Date must be in MM/YYYY format.");
-    return false;
-  }
-  if (!dateRegex.test(endDate) && endDate.toLowerCase() !== "present") {
-    alert("End Date must be in MM/YYYY format or 'Present'.");
-    return false;
-  }
-
-  return true;
-};
-
-const handleSave = async () => {
-  if (!validateForm()) return;
-  if (!newEdu.degree || !newEdu.institution || !newEdu.startDate || !newEdu.endDate) {
-    alert("Please fill all required fields");
-    return;
-  }
-
-  const updatedEducationData = [...educationData, newEdu];
-  setEducationData(updatedEducationData);
-
-  try {
-    const response = await fetch("http://localhost:5000/save", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        step: "education",
-        data: newEdu,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to save data");
+    if (!degree.trim() || !institution.trim() || !startDate.trim() || !endDate.trim()) {
+      alert("Please fill in all required fields (*) before saving.");
+      return false;
     }
 
-    alert("Data saved successfully!");
-    navigate("/builder/skills");
-  } catch (error) {
-    console.error("Error saving education data:", error);
-    alert("Error saving data");
-  }
+    const gpaRegex = /^(\d+(\.\d+)?)(\/(\d+(\.\d+)?))?$/;  
+    if (gpa && (isNaN(gpa) || gpa < 0 || gpa > 10)) {
+      setError("Please enter a valid GPA between 0.0 and 10.0.");
+      return false;
+    }
+    const dateRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
+    if (!dateRegex.test(startDate)) {
+      alert("Start Date must be in MM/YYYY format.");
+      return false;
+    }
+    if (!dateRegex.test(endDate) && endDate.toLowerCase() !== "present") {
+      alert("End Date must be in MM/YYYY format or 'Present'.");
+      return false;
+    }
 
-  setNewEdu({
-    degree: "",
-    institution: "",
-    location: "",
-    gpa: "",
-    startDate: "",
-    endDate: "",
-    coursework: "",
-    honors: "",
-  });
-};
+    return true;
+  };
 
+  const handleSave = async () => {
+    const { degree, institution, location, gpa, startDate, endDate, coursework, honors } = newEdu;
 
-  
+    if (!degree?.trim() || !institution?.trim() || !startDate?.trim()) {
+      alert("Please fill in all required fields (*) before saving.");
+      return;
+    }
+
+    try {
+      await resumeService.saveResumeData('education', newEdu);
+      alert("Education data saved successfully!");
+      navigate("/builder/skills");
+    } catch (error) {
+      console.error("Error saving education data:", error);
+      alert("Error saving data");
+    }
+
+    setNewEdu({
+      degree: "",
+      institution: "",
+      location: "",
+      gpa: "",
+      startDate: "",
+      endDate: "",
+      coursework: "",
+      honors: "",
+    });
+  };
 
   const handleCancel = () => {
     setNewEdu({
