@@ -31,7 +31,7 @@ export default function ATSScoreChecker() {
     </div>
     <div className="flex-1 text-center">
       <img
-        src="ATS2.webp"
+        src="Illustration.png"
         alt="ATS Illustration"
         className="w-64 mx-auto rounded-lg shadow-lg"
       />
@@ -187,7 +187,7 @@ export default function ATSScoreChecker() {
   </div>
 </section>
 
-{/* ✅ 10 Steps to Make an ATS-Friendly Resume */}
+{/*  10 Steps to Make an ATS-Friendly Resume */}
 <section className="max-w-6xl mx-auto mt-24 px-4 md:px-8 space-y-16">
   <div className="text-center">
     <h3 className="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-500">
@@ -283,7 +283,7 @@ export default function ATSScoreChecker() {
 
 
 
-      {/* 🎯 CTA Buttons */}
+      {/*  CTA Buttons */}
       <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pt-14">
         <button className="bg-gradient-to-r from-blue-500 to-sky-400 hover:opacity-90 text-white font-semibold px-8 py-3 rounded-full shadow-xl transition-all duration-300">
           ⬆️ Check My ATS Score
@@ -294,60 +294,6 @@ export default function ATSScoreChecker() {
       </div>
 
 
-    {/* 🌐 Footer */}
-<footer className="bg-gradient-to-br from-sky-100 to-[#F9FAFB] text-gray-800 border-t border-gray-200 mt-24">
-  <div className="max-w-7xl mx-auto px-6 py-12 grid gap-10 sm:grid-cols-2 md:grid-cols-3">
-    
-    {/* Branding */}
-    <div className="space-y-4">
-      <h4 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-500">
-        ATS Score Checker
-      </h4>
-      <p className="text-sm text-gray-600 leading-relaxed">
-        Helping you pass Applicant Tracking Systems and land your dream job with confidence.
-      </p>
     </div>
-
-    {/* Navigation Links */}
-    <div className="space-y-4">
-      <h5 className="font-semibold text-lg">Quick Links</h5>
-      <ul className="space-y-2 text-sm">
-        {["Home", "Features", "How it Works", "Contact"].map((link, i) => (
-          <li key={i}>
-            <a href="#" className="hover:text-purple-600 transition duration-200">
-              {link}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    {/* Social Media */}
-    <div className="space-y-4">
-      <h5 className="font-semibold text-lg">Connect With Us</h5>
-      <div className="flex space-x-4 text-xl text-purple-700">
-        {/* Replace these with actual links or SVGs as needed */}
-        <a href="#" aria-label="Facebook">
-          <i className="fab fa-facebook hover:text-blue-700 transition" />
-        </a>
-        <a href="#" aria-label="Twitter">
-          <i className="fab fa-twitter hover:text-sky-500 transition" />
-        </a>
-        <a href="#" aria-label="LinkedIn">
-          <i className="fab fa-linkedin hover:text-blue-600 transition" />
-        </a>
-        <a href="#" aria-label="Instagram">
-          <i className="fab fa-instagram hover:text-pink-500 transition" />
-        </a>
-      </div>
-    </div>
-  </div>
-
-  {/* Copyright */}
-  <div className="text-center text-sm text-gray-500 py-6 border-t border-gray-300">
-    © {new Date().getFullYear()} ATS Score Checker. All rights reserved.
-  </div>
-</footer>
-</div>
   );
 }
