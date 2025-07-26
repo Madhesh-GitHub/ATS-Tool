@@ -77,3 +77,77 @@ zip:
 country: 
 remote: false
 relocate: false
+
+=== PERSONAL DATA ===
+firstName: Madhesh
+lastName: K
+email: madheshk7239087@gmail.com
+phone: 8782727
+linkedIn: adjvjasvdjakvd
+portfolio: 27jhhvdjvasd
+headline: ghjk
+street: 123
+apartment: apt
+city: tiruppur
+state: 21e12
+zip: 2e12
+country: 21e12
+remote: true
+relocate: true
+
+=== WORK_EXPERIENCE DATA ===
+jobTitle: dxftcgvhbjnkm
+companyName: dxfcgvhbjn
+startDate: 2025-07-04
+endDate: 2025-07-31
+isCurrent: false
+responsibilities: done my work
+
+=== EDUCATION DATA ===
+degree: rtvbhjnk
+institution: vhbjn
+location: Tamil Nadu
+gpa: 9
+startDate: 12/2023
+endDate: Present
+coursework: 12312bkjabd
+honors: adadlabnd
+
+=== SKILLS DATA ===
+technicalSkills: {"name":"React.js","proficiency":"Advanced"}, {"name":"Node.js","proficiency":"Advanced"}
+softSkills: Communication
+industrySkills: CI/CD
+
+=== ACHIEVEMENTSANDAWARDS DATA ===
+achievements: {"id":1753523719938,"title":"tygvhbj","date":"June 2022","description":"hjknm,","keywords":"kjdnk"}
+awards: {"id":1753523740476,"name":"Dummy","organization":"jabdjk","date":"January 2006","level":"National","description":"adjbajsd"}
+
+=== LANGUAGES DATA ===
+0: {"language":"English","proficiency":"Fluent"}
+
+=== CERTIFICATE DATA ===
+title: Pythn
+issuer: Udemy
+issueDate: 12/2024
+expiryDate: No Expiration
+credentialId: ACioq
+credentialUrl: wbdkqbid
+description: ibadbjbads
+
+=== CERTIFICATE DATA ===
+title: esrdtyguhj
+issuer: dxfcghjb
+issueDate: 12/8912
+expiryDate: No Expiration
+credentialId: 
+credentialUrl: 
+description: 
+
+=== CERTIFICATE DATA ===
+title: dnaksbc
+issuer: asjbJKB
+issueDate: 12/2024
+expiryDate: No Expiration
+credentialId: 
+credentialUrl: 
+description: 

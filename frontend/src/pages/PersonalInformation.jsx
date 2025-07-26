@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSession } from "../context/SessionContext"; // ← New import
 
 export default function PersonalInformation() {
   const navigate = useNavigate();
-  const [errors, setErrors] = useState({});
+  const { saveData, startNewSession } = useSession(); // ← Use session context
+  
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", email: "", phone: "",
     linkedIn: "", portfolio: "", headline: "",
     street: "", apartment: "", city: "", state: "",
     zip: "", country: "", remote: false, relocate: false,
   });
+  const [errors, setErrors] = useState({});
+
   const validateForm = () => {
   const newErrors = {};
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -47,29 +51,73 @@ export default function PersonalInformation() {
   };
 
   const handleSave = async () => {
-    const response = await fetch("http://localhost:5000/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ step: "personal", data: formData }),
-    });
-    const result = await response.text();
-    alert(result);
+    if (!validateForm()) {
+      alert("Please fill all required fields correctly.");
+      return;
+    }
+
+    try {
+      await saveData("personal", formData); // ← Use session context
+      alert("Personal information saved successfully!");
+    } catch (error) {
+      console.error("Save failed:", error);
+      alert("Failed to save. Please try again.");
+    }
   };
   const handleNext = async () => {
   if (!validateForm()) {
     alert("Please fill all required fields correctly.");
     return;
   }
-  await handleSave();
-  navigate("/builder/experience", { state: formData });
+
+  try {
+    await saveData("personal", formData); // ← Use session context
+    alert("Personal information saved successfully!");
+    navigate("/builder/experience", { state: formData });
+  } catch (error) {
+    console.error("Save failed:", error);
+    alert("Failed to save. Please try again.");
+  }
 };
+  const handleStartFresh = async () => {
+    if (confirm("This will clear all previous data. Are you sure?")) {
+      await startNewSession();
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        linkedIn: "",
+        portfolio: "",
+        headline: "",
+        street: "",
+        apartment: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
+        remote: false,
+        relocate: false,
+      });
+      alert("Started fresh! Previous data cleared.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f9f4ef] flex flex-col items-center py-8">
       {/* Form Card */}
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6">
-        <h2 className="text-xl font-bold text-[#5a4b81] mb-4 text-[30px]">
-          Personal Information
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-[#5a4b81] text-[30px]">
+            Personal Information
+          </h2>
+          <button
+            onClick={handleStartFresh}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm"
+          >
+            Start Fresh
+          </button>
+        </div>
         <p className="text-gray-600 mb-4">
           Complete your contact details to help recruiters reach you easily.
         </p>

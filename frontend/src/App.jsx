@@ -1,5 +1,6 @@
-import React from 'react'
-import { Routes, Route } from "react-router"
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import { SessionProvider } from './context/SessionContext'; // ← New import
 import LandingPage from "./pages/LandingPage"
 import Navbar from './Nav/Navbar'
 import UploadResume from './pages/UploadResume'
@@ -35,7 +36,7 @@ import { Navigate } from "react-router-dom";
 
 const App = () => {
   return (
-    <>
+    <SessionProvider> {/* ← Wrap everything in SessionProvider */}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -77,7 +78,7 @@ const App = () => {
 
         </Route>
       </Routes>
-    </>
+    </SessionProvider>
   )
 }
 

@@ -69,7 +69,9 @@ const AddCertificatePage = () => {
     console.log("Response:", text);
 
     if (res.ok) {
-      navigate('/CertificatePage');
+      alert("Certificate saved successfully!");
+      // Navigate to resume preview instead of certificate page
+      navigate('/builder/resume-preview'); // ← Fixed navigation path
     } else {
       alert("Failed to save");
     }

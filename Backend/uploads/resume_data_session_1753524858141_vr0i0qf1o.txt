@@ -1,0 +1,17 @@
+
+=== PERSONAL DATA ===
+firstName: Madhesh
+lastName: K
+email: madheshk7239087@gmail.com
+phone: 8782727
+linkedIn: adjvjasvdjakvd
+portfolio: 27jhhvdjvasd
+headline: ghjk
+street: 123
+apartment: apt
+city: tiruppur
+state: 21e12
+zip: 2e12
+country: 21e12
+remote: false
+relocate: false
